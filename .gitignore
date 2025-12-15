@@ -30,4 +30,5 @@ toArp
 # os files
 .DS_Store
 Thumbs.db
+.cache/
 
