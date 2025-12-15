@@ -13,12 +13,15 @@ pkg_check_modules(SNDFILE REQUIRED sndfile)
 
 add_executable(toArp
   src/main.cpp
-  src/find_peaks.cpp
+  # audiolib files:
+  external/AudioLib/Source/AudioData/Source/AudioData.cpp
+  external/AudioLib/Source/Signal/Source/TransientDetector.cpp
+  external/AudioLib/Source/Utilities/Source/Exception.cpp
 )
 
 target_include_directories(toArp PRIVATE
   ${SNDFILE_INCLUDE_DIRS}
-  include
+  ${CMAKE_SOURCE_DIR}/external/AudioLib/Source/
 )
 
 target_link_libraries(toArp
