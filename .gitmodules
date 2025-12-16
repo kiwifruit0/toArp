@@ -1,3 +1,0 @@
-[submodule "external/AudioLib"]
-	path = external/AudioLib
-	url = https://github.com/tmdarwen/AudioLib.git

@@ -6,26 +6,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(external/AudioLib/Source)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE REQUIRED sndfile)
 
 add_executable(toArp
   src/main.cpp
-  # audiolib files:
-  external/AudioLib/Source/AudioData/Source/AudioData.cpp
-  external/AudioLib/Source/Signal/Source/TransientDetector.cpp
-  external/AudioLib/Source/Utilities/Source/Exception.cpp
 )
 
 target_include_directories(toArp PRIVATE
   ${SNDFILE_INCLUDE_DIRS}
-  ${CMAKE_SOURCE_DIR}/external/AudioLib/Source/
 )
 
 target_link_libraries(toArp
-  Signal
   ${SNDFILE_LIBRARIES}
 )
 

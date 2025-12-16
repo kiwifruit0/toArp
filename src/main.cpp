@@ -1,5 +1,3 @@
-#include <AudioData/AudioData.h>
-#include <Signal/TransientDetector.h>
 #include <iostream>
 #include <sndfile.h>
 #include <vector>
@@ -32,25 +30,6 @@ int main() {
     }
   } else {
     mono = samples;
-  }
-
-  // create objects for transient detection
-  AudioData audio(mono);
-  Signal::TransientDetector detector(sfinfo.samplerate);
-  std::vector<std::size_t> transients;
-
-  // detector settings
-  detector.SetValleyToPeakRatio(1.5);
-  detector.SetMinimumPeakLevel(0.1);
-
-  bool found = detector.FindTransients(audio, transients);
-
-  if (found) {
-    for (size_t i = 0; i < transients.size(); i++) {
-      std::cout << "transient at: " << transients[i] / sfinfo.samplerate << "\n";
-    }
-  } else {
-    std::cout << "no transients found";
   }
 
   return 0;
