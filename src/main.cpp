@@ -1,6 +1,30 @@
 #include <iostream>
 #include <sndfile.h>
 #include <vector>
+#include <cmath>
+
+enum class Note { C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B };
+
+enum class Mode { Major, Minor };
+
+struct Scale {
+  Mode mode;
+  Note note;
+};
+
+class Synth {
+public:
+  Scale scale;
+  int samplerate;
+  Synth(Scale scale, int samplerate) {
+    this->scale = scale;
+    this->samplerate = samplerate;
+  }
+  double getFrequency(Note note, int octave) {
+    int n = static_cast<int>(note) + (octave - 4) * 12;
+    return 440.0 * pow(2.0, (n - 9) / 12.0);
+  }
+};
 
 int main() {
   SF_INFO sfinfo = {};
@@ -31,6 +55,14 @@ int main() {
   } else {
     mono = samples;
   }
+
+  // create synth
+  Scale scale = {Mode::Major, Note::C};
+  Synth synth(scale, sfinfo.samplerate);
+  double freq = synth.getFrequency(Note::C, 4);
+
+  std::cout << "frequency of note C4: " << freq;
+
 
   return 0;
 }
