@@ -1,28 +1,89 @@
+#include <cmath>
 #include <iostream>
 #include <sndfile.h>
 #include <vector>
-#include <cmath>
 
-enum class Note { C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B };
+enum class Notes { C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B };
+
+struct Note {
+  Notes note;
+  int octave;
+};
 
 enum class Mode { Major, Minor };
 
 struct Scale {
+  Notes root;
   Mode mode;
-  Note note;
 };
 
 class Synth {
 public:
   Scale scale;
+  std::vector<double> audio;
   int samplerate;
+
   Synth(Scale scale, int samplerate) {
     this->scale = scale;
     this->samplerate = samplerate;
   }
-  double getFrequency(Note note, int octave) {
-    int n = static_cast<int>(note) + (octave - 4) * 12;
+
+  void add_note(struct Note note, std::size_t start, std::size_t end) {
+    // if end sample is beyond current audio size, resize audio
+    if (end >= audio.size()) {
+      this->audio.resize(end, 0.0);
+    }
+    std::vector<double> sine = gen_sine_wave(note, end - start);
+    // add beep to audio at specified position
+    for (std::size_t i = start; i < end; i++) {
+      this->audio[i] += sine[i - start];
+    }
+  }
+
+  void create_wav() {
+    // setting up file info
+    SF_INFO sfinfo = {};
+    sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+    sfinfo.samplerate = this->samplerate;
+    sfinfo.channels = 1;
+
+    // normalise audio before writing
+    normalise_audio();
+
+    // create and write to file
+    SNDFILE *outfile = sf_open("output.wav", SFM_WRITE, &sfinfo);
+    sf_write_double(outfile, this->audio.data(), this->audio.size());
+    sf_close(outfile);
+  }
+
+private:
+  void normalise_audio() {
+    double max_amp = 0.0;
+    for (double s : audio)
+      max_amp = std::max(max_amp, std::abs(s));
+
+    if (max_amp > 1.0) {
+      for (double &s : audio)
+        s /= max_amp;
+    }
+  }
+
+  double get_frequency(Note note) {
+    int n = static_cast<int>(note.note) + (note.octave - 4) * 12;
     return 440.0 * pow(2.0, (n - 9) / 12.0);
+  }
+
+  std::vector<double> gen_sine_wave(Note note, std::size_t num_samples) {
+    // initialise beep vector
+    std::vector<double> wave(num_samples, 0.0);
+    double freq = get_frequency(note);
+    // find phase increment
+    const double phase_incr = (2 * M_PI * freq) / this->samplerate;
+    // fill beep vector with sine wave samples
+    for (std::size_t i = 0; i < wave.size(); i++) {
+      wave[i] = sin(phase_incr * i);
+    }
+    return wave;
   }
 };
 
@@ -57,12 +118,15 @@ int main() {
   }
 
   // create synth
-  Scale scale = {Mode::Major, Note::C};
+  Scale scale = {Notes::C, Mode::Major};
   Synth synth(scale, sfinfo.samplerate);
-  double freq = synth.getFrequency(Note::C, 4);
+  // c major chord
 
-  std::cout << "frequency of note C4: " << freq;
-
+  synth.add_note({Notes::C, 4}, 0, 100000);
+  synth.add_note({Notes::E, 4}, 0, 100000);
+  synth.add_note({Notes::G, 4}, 0, 100000);
+  synth.add_note({Notes::B, 4}, 0, 100000);
+  synth.create_wav();
 
   return 0;
 }
