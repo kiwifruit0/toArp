@@ -1,31 +1,17 @@
 #pragma once
 
-#include <vector>
+#include "Theory.h"
 #include <cstddef>
-
-enum class Notes { C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B };
-
-struct Note {
-  Notes note;
-  int octave;
-};
-
-enum class Mode { Major, Minor };
-
-struct Scale {
-  Notes root;
-  Mode mode;
-};
+#include <vector>
 
 class Synth {
 public:
-  Scale scale;
   std::vector<double> audio;
   int samplerate;
 
-  Synth(Scale scale, int samplerate);
+  Synth(int samplerate);
 
-  void addNote(struct Note note, std::size_t start, std::size_t end);
+  void addNote(Note note, std::size_t start, std::size_t end);
 
   void create_wav();
 

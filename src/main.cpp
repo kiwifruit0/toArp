@@ -1,4 +1,3 @@
-#include "Synth.h"
 #include <iostream>
 #include <sndfile.h>
 #include <vector>
@@ -34,15 +33,15 @@ int main() {
   }
 
   // create synth
-  Scale scale = {Notes::C, Mode::Major};
-  Synth synth(scale, sfinfo.samplerate);
-
-  // c major chord
-  synth.addNote({Notes::C, 4}, 0, 100000);
-  synth.addNote({Notes::E, 4}, 0, 100000);
-  synth.addNote({Notes::G, 4}, 0, 100000);
-  synth.addNote({Notes::B, 4}, 0, 100000);
-  synth.create_wav();
+  // Scale scale = {Notes::C, Mode::Major};
+  // Synth synth(scale, sfinfo.samplerate);
+  //
+  // // c major chord
+  // synth.addNote({Notes::C, 4}, 0, 100000);
+  // synth.addNote({Notes::E, 4}, 0, 100000);
+  // synth.addNote({Notes::G, 4}, 0, 100000);
+  // synth.addNote({Notes::B, 4}, 0, 100000);
+  // synth.create_wav();
 
   return 0;
 }

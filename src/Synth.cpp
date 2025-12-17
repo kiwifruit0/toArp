@@ -2,10 +2,10 @@
 #include <cmath>
 #include <sndfile.h>
 
-Synth::Synth(Scale scale, int samplerate)
-    : scale(scale), samplerate(samplerate) {}
+Synth::Synth(int samplerate)
+    : samplerate(samplerate) {}
 
-void Synth::addNote(struct Note note, std::size_t start, std::size_t end) {
+void Synth::addNote(Note note, std::size_t start, std::size_t end) {
   // if end sample is beyond current audio size, resize audio
   if (end >= audio.size()) {
     this->audio.resize(end, 0.0);
