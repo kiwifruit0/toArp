@@ -12,6 +12,7 @@ pkg_check_modules(SNDFILE REQUIRED sndfile)
 
 add_executable(toArp
   src/main.cpp
+  src/Synth.cpp
 )
 
 target_include_directories(toArp PRIVATE
