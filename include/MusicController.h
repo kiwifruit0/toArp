@@ -6,13 +6,13 @@
 
 class MusicController {
 public:
-  Scale scale;
-  Notes last_note;
-  bool movingUp = true;
-  int samplerate;
-  Synth synth;
-
+    const Scale scale;
+    const int samplerate;
+    const ScaleIntervals intervals;
+    int last_note;
+    bool movingUp;
+    Synth synth;
   MusicController(Scale scale, int samplerate);
 
-  void addNextNote(Notes note, std::size_t start, std::size_t end);
+  void addNextNote(std::size_t start, std::size_t end);
 };

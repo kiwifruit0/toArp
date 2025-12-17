@@ -1,3 +1,5 @@
+#include "MusicController.h"
+#include "Theory.h"
 #include <iostream>
 #include <sndfile.h>
 #include <vector>
@@ -32,16 +34,11 @@ int main() {
     mono = samples;
   }
 
-  // create synth
-  // Scale scale = {Notes::C, Mode::Major};
-  // Synth synth(scale, sfinfo.samplerate);
-  //
-  // // c major chord
-  // synth.addNote({Notes::C, 4}, 0, 100000);
-  // synth.addNote({Notes::E, 4}, 0, 100000);
-  // synth.addNote({Notes::G, 4}, 0, 100000);
-  // synth.addNote({Notes::B, 4}, 0, 100000);
-  // synth.create_wav();
+  // music controller test
+  Scale scale = {Notes::C, Mode::Major};
+
+  MusicController mc(scale, sfinfo.samplerate);
+  mc.addNextNote(0, sfinfo.frames);
 
   return 0;
 }

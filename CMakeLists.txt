@@ -5,7 +5,7 @@ project(toArp LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE REQUIRED sndfile)
@@ -13,7 +13,7 @@ pkg_check_modules(SNDFILE REQUIRED sndfile)
 add_executable(toArp
   src/main.cpp
   src/Synth.cpp
-  # src/MusicController.cpp
+  src/MusicController.cpp
 )
 
 target_include_directories(toArp PRIVATE
