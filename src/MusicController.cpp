@@ -1,6 +1,7 @@
 #include "MusicController.h"
+#include "Synth.h"
 
-MusicController::MusicController(Scale scale, int samplerate, int start_octave,
+MusicController::MusicController(Scale scale, int samplerate, Envelope env, int start_octave,
                                  int num_octaves)
     : scale(scale),
       samplerate(samplerate),
@@ -9,7 +10,7 @@ MusicController::MusicController(Scale scale, int samplerate, int start_octave,
       start_octave(start_octave),
       num_octaves(num_octaves),
       moving_up(true),
-      synth(samplerate) {}
+      synth(samplerate, env) {}
 
 int MusicController::getTotalNotes() const {
   return intervals.size() * num_octaves;

@@ -16,9 +16,10 @@ public:
   bool moving_up;
   Synth synth;
 
-  MusicController(Scale scale, int samplerate, int start_octave=3, int num_octaves = 3);
+  MusicController(Scale scale, int samplerate, Envelope env,
+                  int start_octave = 3, int num_octaves = 3);
   void addNextNote(std::size_t start, std::size_t end);
-  
+
   void write();
 
 private:

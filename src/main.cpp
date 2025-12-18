@@ -1,4 +1,5 @@
 #include "MusicController.h"
+#include "Synth.h"
 #include "Theory.h"
 #include <iostream>
 #include <sndfile.h>
@@ -37,8 +38,10 @@ int main() {
   // music controller test
   Scale scale = {Notes::C, Mode::Major};
 
-  MusicController mc(scale, sfinfo.samplerate);
-  int notelength = 4000;
+  Envelope env = {50.0, 3000.0, 0.0, 40.0};
+
+  MusicController mc(scale, sfinfo.samplerate, env);
+  int notelength = 100000;
   for (int i = 0; i < 40; i++) {
     mc.addNextNote(notelength * i, notelength * i + notelength);
   }
