@@ -2,8 +2,7 @@
 #include <cmath>
 #include <sndfile.h>
 
-Synth::Synth(int samplerate)
-    : samplerate(samplerate) {}
+Synth::Synth(int samplerate) : samplerate(samplerate) {}
 
 void Synth::addNote(Note note, std::size_t start, std::size_t end) {
   // if end sample is beyond current audio size, resize audio
@@ -17,7 +16,7 @@ void Synth::addNote(Note note, std::size_t start, std::size_t end) {
   }
 }
 
-void Synth::create_wav() {
+void Synth::create_wav(const char *file_name) {
   // setting up file info
   SF_INFO sfinfo = {};
   sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -28,7 +27,7 @@ void Synth::create_wav() {
   normaliseAudio();
 
   // create and write to file
-  SNDFILE *outfile = sf_open("output.wav", SFM_WRITE, &sfinfo);
+  SNDFILE *outfile = sf_open(file_name, SFM_WRITE, &sfinfo);
   sf_write_double(outfile, this->audio.data(), this->audio.size());
   sf_close(outfile);
 }

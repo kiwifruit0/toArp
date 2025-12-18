@@ -13,7 +13,7 @@ public:
 
   void addNote(Note note, std::size_t start, std::size_t end);
 
-  void create_wav();
+  void create_wav(const char *file_name);
 
 private:
   void normaliseAudio();

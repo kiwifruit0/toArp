@@ -38,7 +38,12 @@ int main() {
   Scale scale = {Notes::C, Mode::Major};
 
   MusicController mc(scale, sfinfo.samplerate);
-  mc.addNextNote(0, sfinfo.frames);
+  int notelength = 4000;
+  for (int i = 0; i < 40; i++) {
+    mc.addNextNote(notelength * i, notelength * i + notelength);
+  }
+
+  mc.write();
 
   return 0;
 }
