@@ -35,7 +35,8 @@ std::vector<double> TransientDetector::blackmanHarrisWindow(std::size_t N) {
   return window;
 }
 
-std::vector<std::vector<std::complex<double>>> TransientDetector::computeSTFT() {
+std::vector<std::vector<std::complex<double>>>
+TransientDetector::computeSTFT() {
   // equation (2) from paper
   std::vector<double> w = blackmanHarrisWindow(params.window_size);
 
@@ -78,4 +79,92 @@ std::vector<std::vector<std::complex<double>>> TransientDetector::computeSTFT() 
   }
 
   return spectrogram;
+}
+
+std::vector<std::vector<double>> TransientDetector::computeTMinus(
+    const std::vector<std::vector<std::complex<double>>> &X) {
+  // equation (3) from paper
+
+  int num_frames = X.size();
+  if (num_frames == 0)
+    return {};
+
+  int num_bins = X[0].size();
+
+  // initialise T- with same dimensions as X
+  std::vector<std::vector<double>> T_minus(num_frames,
+                                           std::vector<double>(num_bins, 0.0));
+
+  // start from frame i=1
+  for (int i = 1; i < num_frames; ++i) {
+    for (int k = 0; k < num_bins; ++k) {
+      double mag_current = std::abs(X[i][k]);
+      double mag_previous = std::abs(X[i - 1][k]);
+      T_minus[i][k] = mag_current - mag_previous;
+    }
+  }
+
+  return T_minus;
+}
+std::vector<std::vector<double>> TransientDetector::computeTPlus(
+    const std::vector<std::vector<std::complex<double>>> &X) {
+  // equation (4) from paper
+
+  int num_frames = X.size();
+  if (num_frames == 0)
+    return {};
+
+  int num_bins = X[0].size();
+
+  // initialise T- with same dimensions as X
+  std::vector<std::vector<double>> T_minus(num_frames,
+                                           std::vector<double>(num_bins, 0.0));
+
+  // end at frame size-1
+  for (int i = 0; i < num_frames - 1; ++i) {
+    for (int k = 0; k < num_bins; ++k) {
+      double mag_current = std::abs(X[i][k]);
+      double mag_previous = std::abs(X[i + 1][k]);
+      T_minus[i][k] = mag_current - mag_previous;
+    }
+  }
+
+  return T_minus;
+}
+
+std::vector<std::vector<double>>
+TransientDetector::computeF(const std::vector<std::vector<double>> &T_minus,
+                            const std::vector<std::vector<double>> &T_plus) {
+  // equation (5) from paper
+
+  int num_frames = T_minus.size();
+  if (num_frames == 0)
+    return {};
+
+  int num_bins = T_minus[0].size();
+
+  std::vector<std::vector<double>> F(num_frames,
+                                     std::vector<double>(num_bins, 0.0));
+
+  for (int i = 0; i < num_frames; ++i) {
+    for (int j = 0; j < num_bins; ++j) {
+      double sum = 0.0;
+
+      // Sum over vertical neighbours: [j-ν, j+ν]
+      int k_start = std::max(0, j - params.nu);
+      int k_end = std::min(num_bins - 1, j + params.nu);
+
+      for (int k = k_start; k <= k_end; ++k) {
+        // Half-wave rectification: (1 + sgn(x)) * x = x if x≥0, else 0
+        double t_minus_contrib = (T_minus[i][k] >= 0) ? T_minus[i][k] : 0.0;
+        double t_plus_contrib = (T_plus[i][k] >= 0) ? T_plus[i][k] : 0.0;
+
+        sum += t_minus_contrib + t_plus_contrib;
+      }
+
+      F[i][j] = 0.5 * sum;
+    }
+  }
+
+  return F;
 }
