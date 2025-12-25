@@ -39,6 +39,8 @@ public:
   TransientDetector(std::vector<double> audio, int samplerate,
                     Parameters params);
 
+  std::vector<double> detectTransients();
+
 private:
   std::vector<double> audio;
   int samplerate;
@@ -57,4 +59,25 @@ private:
   std::vector<std::vector<double>>
   computeF(const std::vector<std::vector<double>> &T_minus,
            const std::vector<std::vector<double>> &T_plus);
+
+      // Step 1: Dynamic thresholding (equations 7-9)
+    std::vector<std::vector<double>> computeLambda(
+        const std::vector<std::vector<double>>& F);
+    std::vector<std::vector<int>> computeGamma(
+        const std::vector<std::vector<double>>& F,
+        const std::vector<std::vector<double>>& lambda);
+    std::vector<int> computeSigmaGamma(
+        const std::vector<std::vector<int>>& Gamma);
+    
+    // Step 2: Transient extraction and magnitude update (equations 10-11)
+    void updateTransientAndMagnitude(
+        std::vector<std::vector<std::complex<double>>>& X,
+        std::vector<std::vector<double>>& P,
+        const std::vector<int>& Sigma_Gamma,
+        double lambda_thr);
+    
+    // IDFT to convert spectrogram back to time domain
+    std::vector<double> inverseSTFT(
+        const std::vector<std::vector<std::complex<double>>>& P_complex,
+        const std::vector<std::vector<std::complex<double>>>& phase_reference);
 };
