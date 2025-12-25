@@ -12,15 +12,24 @@ by Balaji Thoshkahna, Francois Xavier Nsabimana and  K.R.Ramakrishnan
 
 TransientDetector::TransientDetector(std::vector<double> audio, int samplerate,
                                      Parameters params)
-    : audio(audio),
-      samplerate(samplerate) {
+    : audio(audio), samplerate(samplerate) {
   Parameters defaults = Parameters::getDefaults(samplerate);
+
+  // Apply defaults for any unset parameters
   this->params.window_size =
       (params.window_size > 0) ? params.window_size : defaults.window_size;
   this->params.hop_size =
       (params.hop_size > 0) ? params.hop_size : defaults.hop_size;
+  this->params.nu = (params.nu >= 0) ? params.nu : defaults.nu;
+  this->params.beta = (params.beta > 0) ? params.beta : defaults.beta;
+  this->params.tau = (params.tau >= 0) ? params.tau : defaults.tau;
+  this->params.delta = (params.delta > 0) ? params.delta : defaults.delta;
+  this->params.iterations =
+      (params.iterations > 0) ? params.iterations : defaults.iterations;
+  this->params.lambda_thr_fraction = (params.lambda_thr_fraction > 0)
+                                         ? params.lambda_thr_fraction
+                                         : defaults.lambda_thr_fraction;
 }
-
 std::vector<double> TransientDetector::blackmanHarrisWindow(std::size_t N) {
   std::vector<double> window(N);
   const double a0 = 0.35875;
@@ -150,12 +159,12 @@ TransientDetector::computeF(const std::vector<std::vector<double>> &T_minus,
     for (int j = 0; j < num_bins; ++j) {
       double sum = 0.0;
 
-      // Sum over vertical neighbours: [j-ν, j+ν]
+      // sum over vertical neighbours: [j-ν, j+ν]
       int k_start = std::max(0, j - params.nu);
       int k_end = std::min(num_bins - 1, j + params.nu);
 
       for (int k = k_start; k <= k_end; ++k) {
-        // Half-wave rectification: (1 + sgn(x)) * x = x if x≥0, else 0
+        // half-wave rectification: (1 + sgn(x)) * x = x if x>=0, else 0
         double t_minus_contrib = (T_minus[i][k] >= 0) ? T_minus[i][k] : 0.0;
         double t_plus_contrib = (T_plus[i][k] >= 0) ? T_plus[i][k] : 0.0;
 
